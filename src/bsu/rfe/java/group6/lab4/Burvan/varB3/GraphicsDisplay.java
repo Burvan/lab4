@@ -90,11 +90,10 @@ public class GraphicsDisplay extends JPanel {
         Color oldColor = canvas.getColor();
         Paint oldPaint = canvas.getPaint();
         Font oldFont = canvas.getFont();
-        
 
         if (showAxis) paintAxis(canvas);
         paintGraphics(canvas);
-      
+        if (showMarkers) paintMarkers(canvas);
         canvas.setFont(oldFont);
         canvas.setPaint(oldPaint);
         canvas.setColor(oldColor);
@@ -122,8 +121,35 @@ public class GraphicsDisplay extends JPanel {
         return (int)y%2==0;
     }
 
-    
-    
+    protected void paintMarkers(Graphics2D canvas) {
+    	canvas.setStroke(markerStroke);
+        canvas.setColor(Color.RED);
+        canvas.setPaint(Color.RED);
+        for (Double[] point : graphicsData) {
+            if (isSpecialPoint(point[1]) == true)
+                canvas.setColor(Color.GREEN);
+            else
+                canvas.setColor(Color.RED);
+            Ellipse2D.Double marker = new Ellipse2D.Double();
+            Point2D.Double center = xyToPoint(point[0], point[1]);
+            Point2D.Double corner = shiftPoint(center, 3, 3);
+            marker.setFrameFromCenter(center, corner);
+
+            canvas.setStroke(axisStroke);
+            canvas.draw(new Line2D.Double(shiftPoint(center, 9, -4), shiftPoint(center, 9, 4)));
+            canvas.draw(new Line2D.Double(shiftPoint(center, -9, -4), shiftPoint(center, -9, 4)));
+            canvas.draw(new Line2D.Double(shiftPoint(center, -4, 9), shiftPoint(center, 4, 9)));
+            canvas.draw(new Line2D.Double(shiftPoint(center, -4, -9), shiftPoint(center, 4, -9)));
+            canvas.draw(new Line2D.Double(shiftPoint(center, 9,4 ), shiftPoint(center, 4,9)));
+            canvas.draw(new Line2D.Double(shiftPoint(center, -9, -4), shiftPoint(center, -4, -9)));
+            canvas.draw(new Line2D.Double(shiftPoint(center, 4, -9), shiftPoint(center, 9, -4)));
+            canvas.draw(new Line2D.Double(shiftPoint(center, -4, 9), shiftPoint(center, -9, 4)));
+            canvas.setStroke(markerStroke);
+            canvas.draw(new Line2D.Double(shiftPoint(center, 0, -9), shiftPoint(center, 0, 9)));
+            canvas.draw(new Line2D.Double(shiftPoint(center, -9, 0), shiftPoint(center, 9, 0)));
+             
+        }
+    }
 
 
     protected void paintAxis(Graphics2D canvas) {
